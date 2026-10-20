@@ -7,7 +7,7 @@
    Site configuration — replace with your real contact details
    -------------------------------------------------------------------------- */
 const SITE_CONFIG = {
-  whatsappNumber: '2994200301', // International format, no + or spaces
+  whatsappNumber: '2996101252', // International format, no + or spaces
   whatsappMessage: 'Hola, quisiera informacion sobre disponibilidad de habitaciones.',
 };
 
