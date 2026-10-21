@@ -140,6 +140,81 @@ const initUnitSliders = () => {
   });
 };
 
+const initUnitLightbox = () => {
+  const dialog = document.getElementById('unit-lightbox');
+  if (!dialog) return;
+
+  const imgEl = dialog.querySelector('img');
+  const closeBtn = dialog.querySelector('[data-lightbox-close]');
+  const prevBtn = dialog.querySelector('[data-lightbox-prev]');
+  const nextBtn = dialog.querySelector('[data-lightbox-next]');
+
+  if (!imgEl) return;
+
+  let images = [];
+  let index = 0;
+
+  const show = (i) => {
+    if (!images.length) return;
+    index = (i + images.length) % images.length;
+    const source = images[index];
+    imgEl.src = source.currentSrc || source.src;
+    imgEl.alt = source.alt || 'Foto del departamento';
+  };
+
+  const open = (slider, startIndex) => {
+    images = Array.from(slider.querySelectorAll('.unit-slider-slide img'));
+    if (!images.length) return;
+    dialog.classList.toggle('unit-lightbox--single', images.length < 2);
+    show(startIndex);
+    dialog.showModal();
+    document.body.classList.add('lightbox-open');
+  };
+
+  const close = () => {
+    if (dialog.open) dialog.close();
+  };
+
+  dialog.addEventListener('close', () => {
+    document.body.classList.remove('lightbox-open');
+  });
+
+  document.querySelectorAll('[data-unit-slider]').forEach((slider) => {
+    slider.querySelectorAll('.unit-slider-slide img').forEach((img, i) => {
+      img.setAttribute('tabindex', '0');
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-haspopup', 'dialog');
+      img.setAttribute(
+        'aria-label',
+        `${img.alt || 'Foto del departamento'}. Abrir en pantalla completa`
+      );
+
+      const openThis = () => open(slider, i);
+      img.addEventListener('click', openThis);
+      img.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openThis();
+        }
+      });
+    });
+  });
+
+  closeBtn?.addEventListener('click', close);
+  prevBtn?.addEventListener('click', () => show(index - 1));
+  nextBtn?.addEventListener('click', () => show(index + 1));
+
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) close();
+  });
+
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') show(index - 1);
+    if (event.key === 'ArrowRight') show(index + 1);
+    if (event.key === 'Escape') close();
+  });
+};
+
 const initFooterYear = () => {
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
@@ -150,5 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeaderScroll();
   initNavigation();
   initUnitSliders();
+  initUnitLightbox();
   initFooterYear();
 });
